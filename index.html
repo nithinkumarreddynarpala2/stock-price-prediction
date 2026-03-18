@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>StockPred.AI - Professional Interface</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3.6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- React & ReactDOM CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX transformation in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.4s ease-out forwards; }
+        body { transition: background-color 0.4s ease, color 0.4s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-500/30">
+    <div id="root"></div>
+
+    <!-- React App logic -->
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const allProjectTickers = [
+            { symbol: 'AAPL', name: 'Apple Inc.', sector: 'Technology', price: 150.25, change: 1.2 },
+            { symbol: 'MSFT', name: 'Microsoft Corporation', sector: 'Technology', price: 310.12, change: -0.5 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', sector: 'Communication Services', price: 2750.50, change: 2.1 },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.', sector: 'Consumer Cyclical', price: 3300.00, change: -1.1 },
+            { symbol: 'TSLA', name: 'Tesla Inc.', sector: 'Consumer Cyclical', price: 750.80, change: 3.4 },
+            { symbol: 'META', name: 'Meta Platforms Inc.', sector: 'Communication Services', price: 330.20, change: 0.8 },
+            { symbol: 'NVDA', name: 'NVIDIA Corporation', sector: 'Technology', price: 220.50, change: 5.2 },
+            { symbol: 'JPM', name: 'JPMorgan Chase & Co.', sector: 'Financial Services', price: 140.30, change: 0.3 },
+            { symbol: 'V', name: 'Visa Inc.', sector: 'Financial Services', price: 210.45, change: -0.2 },
+            { symbol: 'JNJ', name: 'Johnson & Johnson', sector: 'Healthcare', price: 165.20, change: 0.1 },
+            { symbol: 'WMT', name: 'Walmart Inc.', sector: 'Consumer Defensive', price: 145.80, change: -0.4 },
+            { symbol: 'KO', name: 'The Coca-Cola Company', sector: 'Consumer Defensive', price: 60.20, change: 0.2 },
+            { symbol: 'AMD', name: 'Advanced Micro Devices', sector: 'Technology', price: 110.60, change: 3.1 },
+            { symbol: 'ADBE', name: 'Adobe Inc.', sector: 'Technology', price: 520.30, change: 2.4 },
+            { symbol: 'UBER', name: 'Uber Technologies, Inc.', sector: 'Technology', price: 48.90, change: 3.5 },
+            { symbol: 'SONY', name: 'Sony Group Corporation', sector: 'Technology', price: 85.10, change: 0.4 },
+            { symbol: 'COST', name: 'Costco Wholesale Corp.', sector: 'Consumer Defensive', price: 550.20, change: 0.9 }
+        ];
+
+        // --- HELPER WRAPPER FOR LUCIDE ---
+        const Icon = ({ name, className = "w-5 h-5", ...props }) => {
+            const ref = useRef(null);
+            useEffect(() => {
+                if (ref.current) {
+                    ref.current.innerHTML = ''; 
+                    const iconEl = document.createElement('i');
+                    iconEl.setAttribute('data-lucide', name);
+                    iconEl.className = className;
+                    ref.current.appendChild(iconEl);
+                    lucide.createIcons();
+                }
+            }, [name, className]);
+            return <span ref={ref} {...props} className="inline-flex items-center justify-center"></span>;
+        };
+
+        const SimpleLineChart = ({ data, color, title, subtitle }) => {
+            if (!data || data.length === 0) return null;
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            const range = max - min || 1;
+            const padding = range * 0.1; 
+            const paddedMax = max + padding;
+            const paddedMin = min - padding;
+            const paddedRange = paddedMax - paddedMin;
+            const points = data.map((val, i) => {
+                const x = (i / (data.length - 1)) * 100;
+                const y = 100 - ((val - paddedMin) / paddedRange) * 100;
+                return `${x},${y}`;
+            }).join(' ');
+
+            return (
+                <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 w-full flex flex-col h-64 shadow-lg relative overflow-hidden transition-all duration-300">
+                    <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none opacity-20">
+                        {[...Array(5)].map((_, i) => <div key={i} className="border-b border-slate-400 dark:border-slate-500 w-full h-0"></div>)}
+                    </div>
+                    <div className="mb-4 z-10 relative">
+                        <h3 className="text-slate-800 dark:text-slate-200 font-bold">{title}</h3>
+                        {subtitle && <p className="text-slate-500 dark:text-slate-400 text-sm">{subtitle}</p>}
+                    </div>
+                    <div className="flex-grow relative w-full h-full z-10">
+                        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
+                            <defs>
+                                <linearGradient id={`grad-${title.replace(/\s/g, '')}`} x1="0" x2="0" y1="0" y2="1">
+                                    <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+                                    <stop offset="100%" stopColor={color} stopOpacity="0.0" />
+                                </linearGradient>
+                            </defs>
+                            <polygon fill={`url(#grad-${title.replace(/\s/g, '')})`} points={`0,100 ${points} 100,100`} />
+                            <polyline fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" points={points} className="drop-shadow-md" />
+                        </svg>
+                    </div>
+                    <div className="absolute top-12 right-4 text-xs font-mono text-slate-500 pointer-events-none opacity-70">${max.toFixed(2)}</div>
+                    <div className="absolute bottom-4 right-4 text-xs font-mono text-slate-500 pointer-events-none opacity-70">${min.toFixed(2)}</div>
+                </div>
+            );
+        };
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('home');
+            const [isDarkMode, setIsDarkMode] = useState(true);
+            const [activeModal, setActiveModal] = useState(null); 
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [tickerInput, setTickerInput] = useState('');
+            const [daysInput, setDaysInput] = useState('');
+            const [isPredicting, setIsPredicting] = useState(false);
+            const [predictionResult, setPredictionResult] = useState(null);
+            const [liveTickers, setLiveTickers] = useState(allProjectTickers.slice(0, 6));
+            
+            useEffect(() => {
+                if (isDarkMode) document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+            }, [isDarkMode]);
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setLiveTickers(prev => prev.map(t => {
+                        const change = (Math.random() - 0.5) * (t.price * 0.002);
+                        return { ...t, price: t.price + change, change: t.change + (change > 0 ? 0.05 : -0.05) };
+                    }));
+                }, 3000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const generateChartData = (points, startPrice) => {
+                let current = startPrice;
+                return Array.from({ length: points }, () => {
+                   current = current + (Math.random() - 0.45) * (startPrice * 0.04);
+                   return Math.max(1, current);
+                });
+            };
+
+            const handlePredict = (e) => {
+                e.preventDefault();
+                setIsPredicting(true);
+                setPredictionResult(null);
+                setTimeout(() => {
+                    const start = Math.random() * 400 + 100;
+                    const pastData = generateChartData(30, start);
+                    const currentPrice = pastData[pastData.length - 1];
+                    const predictedData = generateChartData(parseInt(daysInput), currentPrice);
+                    setPredictionResult({
+                        ticker: tickerInput.toUpperCase(),
+                        days: daysInput,
+                        currentPrice,
+                        predictedFinalPrice: predictedData[predictedData.length - 1],
+                        pastData,
+                        predictedData,
+                        companyName: allProjectTickers.find(t => t.symbol === tickerInput.toUpperCase())?.name || tickerInput.toUpperCase()
+                    });
+                    setIsPredicting(false);
+                }, 1400);
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
+                    {/* Navigation */}
+                    <nav className="fixed top-0 w-full h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-50 flex items-center justify-between px-6">
+                        <div className="flex items-center gap-8">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg"><Icon name="trending-up" className="text-white" /></div>
+                                <span className="text-xl font-bold tracking-tight">StockPred<span className="text-blue-600">.AI</span></span>
+                            </div>
+                            <div className="hidden md:flex gap-2">
+                                {['home', 'predict', 'info'].map(tab => (
+                                    <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${activeTab === tab ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-white' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}>{tab}</button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            {!isLoggedIn ? (
+                                <button onClick={() => setActiveModal('login')} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-700 transition-all">Sign Up</button>
+                            ) : (
+                                <button onClick={() => setIsLoggedIn(false)} className="p-2 text-slate-500 hover:text-rose-500"><Icon name="log-out" /></button>
+                            )}
+                            <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><Icon name={isDarkMode ? 'sun' : 'moon'} /></button>
+                        </div>
+                    </nav>
+
+                    {/* Main Content */}
+                    <main className="pt-24 pb-12 px-6 max-w-7xl mx-auto space-y-8 animate-in">
+                        {activeTab === 'home' && (
+                            <>
+                                <div className="w-full h-64 rounded-2xl overflow-hidden relative shadow-2xl group">
+                                    <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=1400" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex flex-col justify-end p-8">
+                                        <h1 className="text-4xl font-extrabold text-white mb-2">AI-Powered Market Insights</h1>
+                                        <p className="text-slate-200 max-w-lg">Advanced forecasting using LSTM models. Get real-time predictions and outperform the market.</p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {liveTickers.map(t => (
+                                        <div key={t.symbol} className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg hover:border-blue-500 transition-all cursor-pointer">
+                                            <div className="flex justify-between mb-4">
+                                                <div><h3 className="text-xl font-bold">{t.symbol}</h3><p className="text-sm text-slate-500">{t.name}</p></div>
+                                                <div className={`p-2 rounded-lg ${t.change >= 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}><Icon name={t.change >= 0 ? 'arrow-up-right' : 'arrow-down-right'} /></div>
+                                            </div>
+                                            <div className="flex justify-between items-end">
+                                                <div className="text-3xl font-mono">${t.price.toFixed(2)}</div>
+                                                <div className={`font-bold ${t.change >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>{t.change >= 0 ? '+' : ''}{t.change.toFixed(2)}%</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        {activeTab === 'predict' && (
+                            <div className="space-y-6">
+                                <h2 className="text-3xl font-bold">Predict Market Trends</h2>
+                                <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700">
+                                    <form onSubmit={handlePredict} className="flex flex-col md:flex-row gap-6 items-end">
+                                        <div className="flex-1 w-full"><label className="block text-sm font-bold mb-2">Ticker Symbol</label><input type="text" value={tickerInput} onChange={e => setTickerInput(e.target.value)} required placeholder="e.g. AAPL" className="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-600 uppercase" /></div>
+                                        <div className="flex-1 w-full"><label className="block text-sm font-bold mb-2">Days to Predict</label><input type="number" value={daysInput} onChange={e => setDaysInput(e.target.value)} required placeholder="30" className="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-600" /></div>
+                                        <button disabled={isPredicting} type="submit" className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2">{isPredicting ? <Icon name="refresh-cw" className="animate-spin" /> : <Icon name="zap" />} Predict Now</button>
+                                    </form>
+                                </div>
+                                {predictionResult && (
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in">
+                                        <SimpleLineChart data={predictionResult.pastData} color="#f59e0b" title="Real-time Performance" subtitle="Activity over last 30 days" />
+                                        <SimpleLineChart data={predictionResult.predictedData} color="#3b82f6" title={`Predicted Forecast (${predictionResult.days} Days)`} subtitle="LSTM-driven trend projection" />
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        
+                        {activeTab === 'info' && (
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-2xl">
+                                <table className="w-full text-left">
+                                    <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 text-xs font-bold uppercase tracking-widest"><tr className="border-b border-slate-100 dark:border-slate-800"><th className="p-6">Symbol</th><th className="p-6">Company</th><th className="p-6">Sector</th></tr></thead>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                        {allProjectTickers.map(t => <tr key={t.symbol} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"><td className="p-6 font-bold text-blue-600">{t.symbol}</td><td className="p-6">{t.name}</td><td className="p-6 text-slate-500">{t.sector}</td></tr>)}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Simple Modal */}
+                    {activeModal && (
+                        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+                            <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-3xl p-8 border border-slate-200 dark:border-slate-800 animate-in">
+                                <div className="flex justify-between items-center mb-6"><h3 className="text-2xl font-bold capitalize">{activeModal}</h3><button onClick={() => setActiveModal(null)} className="p-2"><Icon name="x" /></button></div>
+                                <form onSubmit={e => { e.preventDefault(); setIsLoggedIn(true); setActiveModal(null); }} className="space-y-4">
+                                    <input type="email" placeholder="Email" required className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl" />
+                                    <input type="password" placeholder="Password" required className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl" />
+                                    <button className="w-full bg-blue-600 py-4 text-white font-bold rounded-xl shadow-lg ring-blue-500/20 active:ring-4 transition-all">Continue</button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                    
+                    <footer className="py-12 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 text-sm">
+                        <p>© 2026 StockPred.AI - Educational Showcase Platform</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
