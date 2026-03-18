@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>StockPred.AI - Professional Interface</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -18,12 +17,9 @@
             }
         }
     </script>
-    <!-- Lucide Icons Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- React & ReactDOM CDN -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel for JSX transformation in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
@@ -37,17 +33,16 @@
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-500/30">
     <div id="root"></div>
 
-    <!-- React App logic -->
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
         const allProjectTickers = [
             { symbol: 'AAPL', name: 'Apple Inc.', sector: 'Technology', price: 150.25, change: 1.2 },
             { symbol: 'MSFT', name: 'Microsoft Corporation', sector: 'Technology', price: 310.12, change: -0.5 },
-            { symbol: 'GOOGL', name: 'Alphabet Inc.', sector: 'Communication Services', price: 2750.50, change: 2.1 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', sector: 'Communication', price: 2750.50, change: 2.1 },
             { symbol: 'AMZN', name: 'Amazon.com Inc.', sector: 'Consumer Cyclical', price: 3300.00, change: -1.1 },
             { symbol: 'TSLA', name: 'Tesla Inc.', sector: 'Consumer Cyclical', price: 750.80, change: 3.4 },
-            { symbol: 'META', name: 'Meta Platforms Inc.', sector: 'Communication Services', price: 330.20, change: 0.8 },
+            { symbol: 'META', name: 'Meta Platforms Inc.', sector: 'Communication', price: 330.20, change: 0.8 },
             { symbol: 'NVDA', name: 'NVIDIA Corporation', sector: 'Technology', price: 220.50, change: 5.2 },
             { symbol: 'JPM', name: 'JPMorgan Chase & Co.', sector: 'Financial Services', price: 140.30, change: 0.3 },
             { symbol: 'V', name: 'Visa Inc.', sector: 'Financial Services', price: 210.45, change: -0.2 },
@@ -56,9 +51,42 @@
             { symbol: 'KO', name: 'The Coca-Cola Company', sector: 'Consumer Defensive', price: 60.20, change: 0.2 },
             { symbol: 'AMD', name: 'Advanced Micro Devices', sector: 'Technology', price: 110.60, change: 3.1 },
             { symbol: 'ADBE', name: 'Adobe Inc.', sector: 'Technology', price: 520.30, change: 2.4 },
-            { symbol: 'UBER', name: 'Uber Technologies, Inc.', sector: 'Technology', price: 48.90, change: 3.5 },
-            { symbol: 'SONY', name: 'Sony Group Corporation', sector: 'Technology', price: 85.10, change: 0.4 },
-            { symbol: 'COST', name: 'Costco Wholesale Corp.', sector: 'Consumer Defensive', price: 550.20, change: 0.9 }
+            { symbol: 'UBER', name: 'Uber Technologies', sector: 'Technology', price: 48.90, change: 3.5 },
+            { symbol: 'SONY', name: 'Sony Group', sector: 'Technology', price: 85.10, change: 0.4 },
+            { symbol: 'COST', name: 'Costco Wholesale', sector: 'Consumer Defensive', price: 550.20, change: 0.9 },
+            { symbol: 'INTC', name: 'Intel Corporation', sector: 'Technology', price: 35.20, change: -1.2 },
+            { symbol: 'CSCO', name: 'Cisco Systems', sector: 'Technology', price: 52.10, change: 0.5 },
+            { symbol: 'PFE', name: 'Pfizer Inc.', sector: 'Healthcare', price: 42.30, change: -0.8 },
+            { symbol: 'UNH', name: 'UnitedHealth Group', sector: 'Healthcare', price: 490.50, change: 1.1 },
+            { symbol: 'ABBV', name: 'AbbVie Inc.', sector: 'Healthcare', price: 150.75, change: 0.6 },
+            { symbol: 'MRK', name: 'Merck & Co.', sector: 'Healthcare', price: 110.20, change: 0.3 },
+            { symbol: 'BAC', name: 'Bank of America', sector: 'Financial Services', price: 28.50, change: -0.5 },
+            { symbol: 'WFC', name: 'Wells Fargo', sector: 'Financial Services', price: 40.10, change: 0.2 },
+            { symbol: 'GS', name: 'Goldman Sachs', sector: 'Financial Services', price: 320.40, change: 1.5 },
+            { symbol: 'MS', name: 'Morgan Stanley', sector: 'Financial Services', price: 85.60, change: 0.7 },
+            { symbol: 'AXP', name: 'American Express', sector: 'Financial Services', price: 160.80, change: -0.3 },
+            { symbol: 'MA', name: 'Mastercard Inc.', sector: 'Financial Services', price: 390.25, change: 0.9 },
+            { symbol: 'DIS', name: 'Walt Disney Co.', sector: 'Communication', price: 95.40, change: -1.5 },
+            { symbol: 'NFLX', name: 'Netflix Inc.', sector: 'Communication', price: 410.60, change: 2.8 },
+            { symbol: 'CMCSA', name: 'Comcast Corp.', sector: 'Communication', price: 42.10, change: 0.4 },
+            { symbol: 'PEP', name: 'PepsiCo Inc.', sector: 'Consumer Defensive', price: 175.30, change: -0.1 },
+            { symbol: 'PG', name: 'Procter & Gamble', sector: 'Consumer Defensive', price: 152.80, change: 0.3 },
+            { symbol: 'MDLZ', name: 'Mondelez Int.', sector: 'Consumer Defensive', price: 72.40, change: 0.5 },
+            { symbol: 'NKE', name: 'NIKE Inc.', sector: 'Consumer Cyclical', price: 105.20, change: -2.1 },
+            { symbol: 'SBUX', name: 'Starbucks Corp.', sector: 'Consumer Cyclical', price: 98.50, change: 0.7 },
+            { symbol: 'HD', name: 'Home Depot', sector: 'Consumer Cyclical', price: 310.20, change: 1.2 },
+            { symbol: 'LOW', name: 'Lowe\'s Companies', sector: 'Consumer Cyclical', price: 215.60, change: 0.8 },
+            { symbol: 'XOM', name: 'Exxon Mobil', sector: 'Energy', price: 110.50, change: -0.9 },
+            { symbol: 'CVX', name: 'Chevron Corp.', sector: 'Energy', price: 160.20, change: -1.1 },
+            { symbol: 'COP', name: 'ConocoPhillips', sector: 'Energy', price: 115.80, change: -0.5 },
+            { symbol: 'BA', name: 'Boeing Company', sector: 'Industrials', price: 210.40, change: 2.5 },
+            { symbol: 'LMT', name: 'Lockheed Martin', sector: 'Industrials', price: 450.60, change: 0.2 },
+            { symbol: 'RTX', name: 'Raytheon Tech.', sector: 'Industrials', price: 95.30, change: 0.4 },
+            { symbol: 'UNP', name: 'Union Pacific', sector: 'Industrials', price: 205.10, change: -0.6 },
+            { symbol: 'UPS', name: 'United Parcel', sector: 'Industrials', price: 170.80, change: 1.3 },
+            { symbol: 'FDX', name: 'FedEx Corp.', sector: 'Industrials', price: 250.20, change: 1.7 },
+            { symbol: 'CAT', name: 'Caterpillar Inc.', sector: 'Industrials', price: 260.40, change: -0.2 },
+            { symbol: 'DE', name: 'Deere & Company', sector: 'Industrials', price: 380.10, change: 0.5 }
         ];
 
         // --- HELPER WRAPPER FOR LUCIDE ---
@@ -124,26 +152,58 @@
             const [isDarkMode, setIsDarkMode] = useState(true);
             const [activeModal, setActiveModal] = useState(null); 
             const [isLoggedIn, setIsLoggedIn] = useState(false);
+            
+            // Prediction states
             const [tickerInput, setTickerInput] = useState('');
             const [daysInput, setDaysInput] = useState('');
             const [isPredicting, setIsPredicting] = useState(false);
             const [predictionResult, setPredictionResult] = useState(null);
-            const [liveTickers, setLiveTickers] = useState(allProjectTickers.slice(0, 6));
+            const [showSuggestions, setShowSuggestions] = useState(false);
             
+            // Home page interactive states
+            const [liveTickers, setLiveTickers] = useState(allProjectTickers);
+            const [homeFilter, setHomeFilter] = useState('All');
+            const [displayLimit, setDisplayLimit] = useState(9);
+            
+            // Setup dark mode
             useEffect(() => {
                 if (isDarkMode) document.documentElement.classList.add('dark');
                 else document.documentElement.classList.remove('dark');
             }, [isDarkMode]);
 
+            // Simulate live market data updates across all tickers
             useEffect(() => {
                 const interval = setInterval(() => {
                     setLiveTickers(prev => prev.map(t => {
-                        const change = (Math.random() - 0.5) * (t.price * 0.002);
-                        return { ...t, price: t.price + change, change: t.change + (change > 0 ? 0.05 : -0.05) };
+                        const change = (Math.random() - 0.5) * (t.price * 0.003);
+                        return { ...t, price: t.price + change, change: t.change + (change > 0 ? 0.08 : -0.08) };
                     }));
                 }, 3000);
                 return () => clearInterval(interval);
             }, []);
+
+            // Filter logic for the home page
+            const displayedHomeTickers = useMemo(() => {
+                let filtered = liveTickers;
+                if (homeFilter === 'Top Gainers') {
+                    filtered = [...liveTickers].sort((a, b) => b.change - a.change);
+                } else if (homeFilter === 'Top Losers') {
+                    filtered = [...liveTickers].sort((a, b) => a.change - b.change);
+                } else if (homeFilter !== 'All') {
+                    filtered = liveTickers.filter(t => t.sector === homeFilter);
+                }
+                return filtered.slice(0, displayLimit);
+            }, [liveTickers, homeFilter, displayLimit]);
+
+            // Filter logic for prediction search suggestions
+            const filteredSuggestions = useMemo(() => {
+                if (!tickerInput) return [];
+                const query = tickerInput.toLowerCase();
+                return allProjectTickers.filter(t => 
+                    t.symbol.toLowerCase().includes(query) || 
+                    t.name.toLowerCase().includes(query)
+                ).slice(0, 6); // Max 6 suggestions
+            }, [tickerInput]);
 
             const generateChartData = (points, startPrice) => {
                 let current = startPrice;
@@ -155,6 +215,7 @@
 
             const handlePredict = (e) => {
                 e.preventDefault();
+                setShowSuggestions(false);
                 setIsPredicting(true);
                 setPredictionResult(null);
                 setTimeout(() => {
@@ -192,9 +253,12 @@
                         </div>
                         <div className="flex items-center gap-4">
                             {!isLoggedIn ? (
-                                <button onClick={() => setActiveModal('login')} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-700 transition-all">Sign Up</button>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => setActiveModal('login')} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-all hidden sm:block">Sign In</button>
+                                    <button onClick={() => setActiveModal('signup')} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-all">Sign Up</button>
+                                </div>
                             ) : (
-                                <button onClick={() => setIsLoggedIn(false)} className="p-2 text-slate-500 hover:text-rose-500"><Icon name="log-out" /></button>
+                                <button onClick={() => setIsLoggedIn(false)} className="p-2 text-slate-500 hover:text-rose-500" title="Log out"><Icon name="log-out" /></button>
                             )}
                             <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><Icon name={isDarkMode ? 'sun' : 'moon'} /></button>
                         </div>
@@ -205,18 +269,40 @@
                         {activeTab === 'home' && (
                             <>
                                 <div className="w-full h-64 rounded-2xl overflow-hidden relative shadow-2xl group">
-                                    <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=1400" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                                    <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=1400" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Market Graph" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex flex-col justify-end p-8">
                                         <h1 className="text-4xl font-extrabold text-white mb-2">AI-Powered Market Insights</h1>
                                         <p className="text-slate-200 max-w-lg">Advanced forecasting using LSTM models. Get real-time predictions and outperform the market.</p>
                                     </div>
                                 </div>
+                                
+                                {/* Interactive Filters */}
+                                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 py-2">
+                                    <h2 className="text-2xl font-bold">Live Markets</h2>
+                                    <div className="flex flex-wrap gap-2 justify-center">
+                                        {['All', 'Top Gainers', 'Top Losers', 'Technology', 'Healthcare'].map(filter => (
+                                            <button 
+                                                key={filter} 
+                                                onClick={() => { setHomeFilter(filter); setDisplayLimit(9); }}
+                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${homeFilter === filter ? 'bg-blue-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+                                            >
+                                                {filter}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {liveTickers.map(t => (
+                                    {displayedHomeTickers.map(t => (
                                         <div key={t.symbol} className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg hover:border-blue-500 transition-all cursor-pointer">
                                             <div className="flex justify-between mb-4">
-                                                <div><h3 className="text-xl font-bold">{t.symbol}</h3><p className="text-sm text-slate-500">{t.name}</p></div>
-                                                <div className={`p-2 rounded-lg ${t.change >= 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}><Icon name={t.change >= 0 ? 'arrow-up-right' : 'arrow-down-right'} /></div>
+                                                <div>
+                                                    <h3 className="text-xl font-bold">{t.symbol}</h3>
+                                                    <p className="text-xs text-slate-500 truncate max-w-[120px]">{t.name}</p>
+                                                </div>
+                                                <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${t.change >= 0 ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'}`}>
+                                                    <Icon name={t.change >= 0 ? 'trending-up' : 'trending-down'} />
+                                                </div>
                                             </div>
                                             <div className="flex justify-between items-end">
                                                 <div className="text-3xl font-mono">${t.price.toFixed(2)}</div>
@@ -225,6 +311,18 @@
                                         </div>
                                     ))}
                                 </div>
+                                
+                                {/* Load More Button */}
+                                {displayedHomeTickers.length < liveTickers.filter(t => homeFilter === 'All' || homeFilter === 'Top Gainers' || homeFilter === 'Top Losers' || t.sector === homeFilter).length && (
+                                    <div className="flex justify-center mt-8">
+                                        <button 
+                                            onClick={() => setDisplayLimit(prev => prev + 9)}
+                                            className="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-medium shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                        >
+                                            Load More Assets
+                                        </button>
+                                    </div>
+                                )}
                             </>
                         )}
 
@@ -233,13 +331,53 @@
                                 <h2 className="text-3xl font-bold">Predict Market Trends</h2>
                                 <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700">
                                     <form onSubmit={handlePredict} className="flex flex-col md:flex-row gap-6 items-end">
-                                        <div className="flex-1 w-full"><label className="block text-sm font-bold mb-2">Ticker Symbol</label><input type="text" value={tickerInput} onChange={e => setTickerInput(e.target.value)} required placeholder="e.g. AAPL" className="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-600 uppercase" /></div>
-                                        <div className="flex-1 w-full"><label className="block text-sm font-bold mb-2">Days to Predict</label><input type="number" value={daysInput} onChange={e => setDaysInput(e.target.value)} required placeholder="30" className="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-600" /></div>
-                                        <button disabled={isPredicting} type="submit" className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2">{isPredicting ? <Icon name="refresh-cw" className="animate-spin" /> : <Icon name="zap" />} Predict Now</button>
+                                        <div className="flex-1 w-full relative">
+                                            <label className="block text-sm font-bold mb-2">Ticker Symbol</label>
+                                            <input 
+                                                type="text" 
+                                                value={tickerInput} 
+                                                onChange={e => { setTickerInput(e.target.value); setShowSuggestions(true); }}
+                                                onFocus={() => setShowSuggestions(true)}
+                                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                                required 
+                                                placeholder="e.g. AAPL or Apple" 
+                                                className="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-600 uppercase focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                            />
+                                            {/* Search Auto-Suggestions Menu */}
+                                            {showSuggestions && filteredSuggestions.length > 0 && (
+                                                <ul className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+                                                    {filteredSuggestions.map(t => (
+                                                        <li 
+                                                            key={t.symbol} 
+                                                            onMouseDown={() => { setTickerInput(t.symbol); setShowSuggestions(false); }}
+                                                            className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer flex justify-between items-center transition-colors border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+                                                        >
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-blue-600 dark:text-blue-400">{t.symbol}</span>
+                                                                <span className="text-xs text-slate-500">{t.name}</span>
+                                                            </div>
+                                                            <span className="text-xs bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded-md text-slate-500">{t.sector}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 w-full">
+                                            <label className="block text-sm font-bold mb-2">Days to Predict</label>
+                                            <input 
+                                                type="number" 
+                                                value={daysInput} 
+                                                onChange={e => setDaysInput(e.target.value)} 
+                                                required 
+                                                placeholder="30" 
+                                                className="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                            />
+                                        </div>
+                                        <button disabled={isPredicting} type="submit" className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 transition-all">{isPredicting ? <Icon name="refresh-cw" className="animate-spin" /> : <Icon name="zap" />} Predict Now</button>
                                     </form>
                                 </div>
                                 {predictionResult && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in mt-8">
                                         <SimpleLineChart data={predictionResult.pastData} color="#f59e0b" title="Real-time Performance" subtitle="Activity over last 30 days" />
                                         <SimpleLineChart data={predictionResult.predictedData} color="#3b82f6" title={`Predicted Forecast (${predictionResult.days} Days)`} subtitle="LSTM-driven trend projection" />
                                     </div>
@@ -248,32 +386,62 @@
                         )}
                         
                         {activeTab === 'info' && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-2xl">
-                                <table className="w-full text-left">
-                                    <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 text-xs font-bold uppercase tracking-widest"><tr className="border-b border-slate-100 dark:border-slate-800"><th className="p-6">Symbol</th><th className="p-6">Company</th><th className="p-6">Sector</th></tr></thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                        {allProjectTickers.map(t => <tr key={t.symbol} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"><td className="p-6 font-bold text-blue-600">{t.symbol}</td><td className="p-6">{t.name}</td><td className="p-6 text-slate-500">{t.sector}</td></tr>)}
-                                    </tbody>
-                                </table>
+                            <div className="space-y-4">
+                                <h2 className="text-3xl font-bold">Supported Assets ({allProjectTickers.length})</h2>
+                                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-2xl">
+                                    <div className="max-h-[600px] overflow-y-auto">
+                                        <table className="w-full text-left relative">
+                                            <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 text-xs font-bold uppercase tracking-widest sticky top-0 z-10 shadow-sm">
+                                                <tr className="border-b border-slate-200 dark:border-slate-700">
+                                                    <th className="p-6">Symbol</th>
+                                                    <th className="p-6">Company</th>
+                                                    <th className="p-6">Sector</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                                {allProjectTickers.map(t => (
+                                                    <tr key={t.symbol} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                        <td className="p-6 font-bold text-blue-600">{t.symbol}</td>
+                                                        <td className="p-6">{t.name}</td>
+                                                        <td className="p-6 text-slate-500">
+                                                            <span className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full text-xs">{t.sector}</span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </main>
 
-                    {/* Simple Modal */}
+                    {/* Authentication Modal */}
                     {activeModal && (
                         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-                            <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-3xl p-8 border border-slate-200 dark:border-slate-800 animate-in">
-                                <div className="flex justify-between items-center mb-6"><h3 className="text-2xl font-bold capitalize">{activeModal}</h3><button onClick={() => setActiveModal(null)} className="p-2"><Icon name="x" /></button></div>
+                            <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl p-8 border border-slate-200 dark:border-slate-800 animate-in">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-2xl font-bold">{activeModal === 'login' ? 'Welcome Back' : 'Create an Account'}</h3>
+                                    <button onClick={() => setActiveModal(null)} className="p-2 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"><Icon name="x" /></button>
+                                </div>
                                 <form onSubmit={e => { e.preventDefault(); setIsLoggedIn(true); setActiveModal(null); }} className="space-y-4">
-                                    <input type="email" placeholder="Email" required className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl" />
-                                    <input type="password" placeholder="Password" required className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl" />
-                                    <button className="w-full bg-blue-600 py-4 text-white font-bold rounded-xl shadow-lg ring-blue-500/20 active:ring-4 transition-all">Continue</button>
+                                    <input type="email" placeholder="Email Address" required className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                                    <input type="password" placeholder="Password" required className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                                    <button type="submit" className="w-full bg-blue-600 py-4 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 ring-blue-500/20 active:ring-4 transition-all">
+                                        {activeModal === 'login' ? 'Sign In' : 'Sign Up'}
+                                    </button>
                                 </form>
+                                <p className="mt-6 text-center text-sm text-slate-500">
+                                    {activeModal === 'login' ? "Don't have an account? " : "Already have an account? "}
+                                    <button onClick={() => setActiveModal(activeModal === 'login' ? 'signup' : 'login')} className="text-blue-600 font-semibold hover:underline">
+                                        {activeModal === 'login' ? 'Sign up' : 'Sign in'}
+                                    </button>
+                                </p>
                             </div>
                         </div>
                     )}
                     
-                    <footer className="py-12 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 text-sm">
+                    <footer className="py-12 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 text-sm mt-auto">
                         <p>© 2026 StockPred.AI - Educational Showcase Platform</p>
                     </footer>
                 </div>
